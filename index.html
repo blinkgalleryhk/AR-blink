@@ -1,6 +1,5 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Face Effects</title><meta itemprop="name" content="Face Effects"><meta name="twitter:title" content="Face Effects"><meta property="og:title" content="Face Effects"><meta property="og:site_name" content="Face Effects"><meta name="description" content="This project demonstrates how to use Face Effects to anchor virtual content to a face."><meta itemprop="description" content="This project demonstrates how to use Face Effects to anchor virtual content to a face."><meta property="og:description" content="This project demonstrates how to use Face Effects to anchor virtual content to a face."><meta name="twitter:description" content="This project demonstrates how to use Face Effects to anchor virtual content to a face."><script crossorigin="anonymous" src="./external/runtime/runtime.js"></script><script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="face"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script><script>console.log('=== 8th Wall Face Effects Loading ===')
-    
-    // Simple status updates for loading screen
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"><title>Multi-Face AR Effects</title><meta itemprop="name" content="Multi-Face AR Effects"><meta name="twitter:title" content="Multi-Face AR Effects"><meta property="og:title" content="Multi-Face AR Effects"><meta property="og:site_name" content="Multi-Face AR Effects"><meta name="description" content="Multi-face detection AR with up to 5 simultaneous faces tracked."><meta itemprop="description" content="Multi-face detection AR with up to 5 simultaneous faces tracked."><meta property="og:description" content="Multi-face detection AR with up to 5 simultaneous faces tracked."><script crossorigin="anonymous" src="./external/runtime/runtime.js"></script><script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="face"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script><script>console.log('=== Multi-Face AR Loading ===')
+
     function updateStatus(text, color = 'white') {
       const statusEl = document.getElementById('loading-status')
       if (statusEl) {
@@ -9,46 +8,342 @@
       }
       console.log('Status:', text)
     }
-    
-    // Update details
+
     function updateDetails(text) {
       const detailsEl = document.getElementById('loading-details')
-      if (detailsEl) {
-        detailsEl.innerHTML = text
-      }
+      if (detailsEl) detailsEl.innerHTML = text
     }
-    
-    // Initial loading sequence
+
     setTimeout(() => updateStatus('Initializing...'), 100)
     setTimeout(() => updateStatus('Loading 8th Wall Engine...'), 1000)
-    setTimeout(() => updateStatus('Checking camera...'), 3000)
-    
-    // Update details with real-time info
+    setTimeout(() => updateStatus('Preparing multi-face detection...'), 3000)
+
     setTimeout(() => {
       updateDetails(`
         <div>✅ Page loaded successfully</div>
         <div>⏳ Waiting for 8th Wall Engine...</div>
-        <div>⏳ Checking camera permissions...</div>
+        <div>⏳ Preparing up to 5 face tracking slots...</div>
       `)
     }, 500)
-    
-    // Global function for app.js to call
+
     window.updateLoadingStatus = updateStatus
     window.updateLoadingDetails = updateDetails
-    
-    console.log('Initialization script loaded')</script><link rel="preconnect" href="https://cdn.8thwall.com"><link rel="preconnect" href="https://cdn.jsdelivr.net"><meta property="og:image" content="https://8thwall.org/studio-face-effects-example/assets/preview.png"><style>body {
+
+    console.log('Initialization script loaded')</script><link rel="preconnect" href="https://cdn.8thwall.com"><link rel="preconnect" href="https://cdn.jsdelivr.net"><meta property="og:image" content="https://8thwall.org/studio-face-effects-example/assets/preview.png"><style>* {
+      box-sizing: border-box;
+    }
+
+    body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
-    
+
+    /* ===== BOTTOM FILTER CAROUSEL ===== */
+    #filter-carousel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 0 28px 0;
+      padding-bottom: max(100px, calc(env(safe-area-inset-bottom) + 60px));
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    #filter-carousel.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Scroll container with arrows on sides */
+    .carousel-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .filter-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 8px 24px;
+      /* Ensure horizontal layout, never wrap */
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      /* Center the first/last items when scrolled to edges */
+      scroll-padding-left: calc(50vw - 30px);
+      scroll-padding-right: calc(50vw - 30px);
+      /* Smooth scroll behavior for programmatic scrolling */
+      scroll-behavior: smooth;
+      /* Allow touch actions for horizontal scroll */
+      touch-action: pan-x pan-y pinch-zoom;
+      width: 100%;
+    }
+
+    .filter-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scroll buttons on mobile, show on desktop */
+    .scroll-btn {
+      display: none;
+      position: absolute;
+      z-index: 52;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .scroll-btn:hover {
+      background: rgba(255,255,255,0.35);
+      transform: scale(1.1);
+    }
+
+    .scroll-btn:active {
+      transform: scale(0.95);
+    }
+
+    .scroll-btn.left {
+      left: 4px;
+    }
+
+    .scroll-btn.right {
+      right: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .scroll-btn {
+        display: flex;
+      }
+    }
+
+    .filter-item {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      scroll-snap-align: center;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      -webkit-user-select: none;
+      user-select: none;
+      /* Prevent any shrinking */
+      min-width: 64px;
+      /* Ensure items don't get squished */
+      max-width: 64px;
+    }
+
+    .filter-item:active {
+      transform: scale(0.92);
+    }
+
+    .filter-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      overflow: hidden;
+      position: relative;
+      transition: all 0.2s ease;
+      background-size: cover;
+      background-position: center;
+      /* Prevent any layout shifts */
+      flex-shrink: 0;
+      background-color: #333;
+    }
+
+    .filter-item.active .filter-thumb {
+      border-color: #fff;
+      box-shadow: 0 0 0 3px #4CAF50, 0 0 12px rgba(76, 175, 80, 0.4);
+      transform: scale(1.08);
+    }
+
+    .filter-item.active .filter-name {
+      color: #4CAF50;
+      font-weight: 700;
+    }
+
+    .filter-name {
+      color: rgba(255,255,255,0.7);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 64px;
+      transition: color 0.2s ease;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    /* Center indicator line */
+    .center-indicator {
+      position: fixed;
+      bottom: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 18px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 1px;
+      pointer-events: none;
+      z-index: 51;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .center-indicator.visible {
+      opacity: 1;
+    }
+
+    /* Current filter label */
+    #current-filter-label {
+      position: fixed;
+      bottom: 118px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 51;
+      letter-spacing: 0.5px;
+    }
+
+    #current-filter-label.visible {
+      opacity: 1;
+    }
+
+    /* Photo capture button (centered above carousel) */
+    #capture-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 4px solid white;
+      background: rgba(255,255,255,0.15);
+      cursor: pointer;
+      z-index: 50;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
+    #capture-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #capture-btn::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border-radius: 50%;
+      background: white;
+      transition: all 0.15s ease;
+    }
+
+    #capture-btn:active::after {
+      transform: scale(0.88);
+      background: #e0e0e0;
+    }
+
+    /* Multi-face indicator (top right) */
+    #face-indicator {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 10px 14px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #face-indicator.visible {
+      opacity: 1;
+    }
+
+    .face-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #333;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .face-dot.active {
+      background: #4CAF50;
+      border-color: #81C784;
+      box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+    }
+
+    .face-dot-label {
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 2px;
+    }
+
+    /* Loading screen */
+    #simple-loading {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      text-align: center;
+    }
+
     #camera-error {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: #000;
       color: white;
       display: none;
@@ -59,56 +354,118 @@
       text-align: center;
       padding: 20px;
     }
-    
-    #camera-error h2 {
-      color: #ff6b6b;
-      margin-bottom: 20px;
+
+    #camera-error h2 { color: #ff6b6b; margin-bottom: 20px; }
+    #camera-error p { margin-bottom: 10px; opacity: 0.9; }
+
+    /* Scroll hint animation for first-time users */
+    @keyframes scrollHint {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(-8px); }
     }
-    
-    #camera-error p {
-      margin-bottom: 10px;
-      opacity: 0.9;
-    }
-    
-    #camera-error ul {
-      text-align: left;
-      opacity: 0.7;
-      margin-top: 20px;
-    }</style><style>video {
-    /* Ensure video is visible for capture */
-    object-fit: cover !important;
-  }</style></head><body><div id="simple-loading" style="position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    font-family: Arial, sans-serif;
-    text-align: center;"><div style="font-size: 24px; margin-bottom: 20px;">🎭 AR Face Effects</div><div id="loading-status" style="font-size: 18px; margin-bottom: 30px; opacity: 0.9;">Initializing camera...</div><div id="loading-details" style="font-size: 14px; opacity: 0.7; max-width: 400px; line-height: 1.5;"><div>1. Checking camera permissions...</div><div>2. Loading 8th Wall Engine...</div><div>3. Initializing AR experience...</div></div><div style="margin-top: 40px; font-size: 12px; opacity: 0.5;">If stuck here, check browser console (F12) for errors</div></div><div id="camera-error"></div><script src="bundle.js"></script><script>// Global error handler
-    window.addEventListener('error', function(event) {
-      console.error('Global error:', event.error)
-      const statusEl = document.getElementById('loading-status')
-      if (statusEl) {
-        statusEl.textContent = `Error: ${event.error.message || 'Unknown error'}`
-        statusEl.style.color = '#ff6b6b'
-      }
-    })
-    
-    // Fallback: if nothing happens after 20 seconds, show error
-    setTimeout(() => {
-      const loadingEl = document.getElementById('simple-loading')
-      if (loadingEl && loadingEl.style.display !== 'none') {
-        console.warn('⚠ Fallback: Still loading after 20 seconds')
-        const statusEl = document.getElementById('loading-status')
-        if (statusEl) {
-          statusEl.textContent = 'Timeout - Check browser console (F12)'
-          statusEl.style.color = '#ff9800'
+
+    .scroll-hint {
+      animation: scrollHint 1.5s ease-in-out 3;
+    }</style><base target="_blank"><base target="_blank"><base target="_blank"></head><body><div id="filter-carousel"><div class="carousel-wrapper"><button class="scroll-btn left" id="scroll-left" aria-label="Scroll left">‹</button><div class="filter-scroll" id="filter-scroll"><div class="filter-item active" data-filter="baobao"><div class="filter-thumb" style="background-image: url('assets/moneybaobao.png')"></div><span class="filter-name">Baobao</span></div><div class="filter-item" data-filter="realcat"><div class="filter-thumb" style="background-image: url('assets/real_cat.png')"></div><span class="filter-name">Real Cat</span></div><div class="filter-item" data-filter="thirdcat"><div class="filter-thumb" style="background-image: url('assets/catonbranch.png')"></div><span class="filter-name">Cat on Branch</span></div><div class="filter-item" data-filter="fourthcat"><div class="filter-thumb" style="background-image: url('assets/luckycat.png')"></div><span class="filter-name">Lucky cat</span></div><div class="filter-item" data-filter="fifthcat"><div class="filter-thumb" style="background-image: url('assets/flowercat_2.png')"></div><span class="filter-name">Fifth Cat</span></div><div class="filter-item" data-filter="sixthcat"><div class="filter-thumb" style="background-image: url('assets/koi_luckycat.png')"></div><span class="filter-name">Koi Lucky Cat Family</span></div><div class="filter-item" data-filter="seventhcat"><div class="filter-thumb" style="background-image: url('assets/blackcat.png')"></div><span class="filter-name">Black Cat</span></div><div class="filter-item" data-filter="eighthcat"><div class="filter-thumb" style="background-image: url('assets/dancing_lion_cat.png')"></div><span class="filter-name">Dancing Lion Cat</span></div><div class="filter-item" data-filter="ninethcat"><div class="filter-thumb" style="background-image: url('assets/cat_flowers.png')"></div><span class="filter-name">Cat with Flowers</span></div></div><button class="scroll-btn right" id="scroll-right" aria-label="Scroll right">›</button></div></div><div class="center-indicator" id="center-indicator"></div><div id="current-filter-label">Baobao</div><div id="capture-btn"></div><div id="face-indicator"><span class="face-dot-label">Faces:</span><div class="face-dot" data-face="1" title="Face 1"></div><div class="face-dot" data-face="2" title="Face 2"></div><div class="face-dot" data-face="3" title="Face 3"></div></div><div id="simple-loading"><div style="font-size: 24px; margin-bottom: 20px;">🎭 Multi-Face AR Effects</div><div id="loading-status" style="font-size: 18px; margin-bottom: 30px; opacity: 0.9;">Initializing camera...</div><div id="loading-details" style="font-size: 14px; opacity: 0.7; max-width: 400px; line-height: 1.5;"><div>1. Checking camera permissions...</div><div>2. Loading 8th Wall Engine...</div><div>3. Preparing multi-face tracking (up to 3 faces)...</div></div><div style="margin-top: 40px; font-size: 12px; opacity: 0.5;">If stuck here, check browser console (F12) for errors</div></div><div id="camera-error"></div><script>(function() {
+      const scrollContainer = document.getElementById('filter-scroll');
+      const leftBtn = document.getElementById('scroll-left');
+      const rightBtn = document.getElementById('scroll-right');
+      const filterItems = document.querySelectorAll('.filter-item');
+      const currentLabel = document.getElementById('current-filter-label');
+      let currentIndex = 0;
+
+      // Scroll by one item width + gap
+      const scrollAmount = 74; // 60px thumb + 14px gap
+
+      function scrollToIndex(index) {
+        if (index < 0) index = 0;
+        if (index >= filterItems.length) index = filterItems.length - 1;
+        currentIndex = index;
+        const item = filterItems[index];
+        if (item && scrollContainer) {
+          // Center the item in the viewport
+          const containerWidth = scrollContainer.clientWidth;
+          const itemLeft = item.offsetLeft;
+          const itemWidth = item.offsetWidth;
+          const scrollTo = itemLeft - (containerWidth / 2) + (itemWidth / 2);
+          scrollContainer.scrollTo({ left: scrollTo, behavior: 'smooth' });
         }
+        updateActiveState(index);
       }
-    }, 20000)</script></body></html>
+
+      function updateActiveState(index) {
+       // Replace the existing filterItems click handler with:
+filterItems.forEach((item, index) => {
+  item.addEventListener('click', () => {
+    const filterId = item.dataset.filter
+    if (filterId && window.globalWorld) {
+      window.globalWorld.spaces.loadSpace(filterId)
+      console.log(`➡️ Loading space: ${filterId}`)
+    }
+    scrollToIndex(index)
+  })
+});
+      }
+
+      if (leftBtn) {
+        leftBtn.addEventListener('click', () => scrollToIndex(currentIndex - 1));
+      }
+
+      if (rightBtn) {
+        rightBtn.addEventListener('click', () => scrollToIndex(currentIndex + 1));
+      }
+
+      // Click on item to select and scroll to it
+      filterItems.forEach((item, index) => {
+        item.addEventListener('click', () => scrollToIndex(index));
+      });
+
+      // Handle scroll snap to update active state
+      let scrollTimeout;
+      if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', () => {
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(() => {
+            // Find which item is closest to center
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const containerCenter = containerRect.left + containerRect.width / 2;
+            let closestIndex = 0;
+            let closestDistance = Infinity;
+
+            filterItems.forEach((item, i) => {
+              const itemRect = item.getBoundingClientRect();
+              const itemCenter = itemRect.left + itemRect.width / 2;
+              const distance = Math.abs(itemCenter - containerCenter);
+              if (distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = i;
+              }
+            });
+
+            if (closestIndex !== currentIndex) {
+              currentIndex = closestIndex;
+              updateActiveState(currentIndex);
+            }
+          }, 100);
+        });
+      }
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') scrollToIndex(currentIndex - 1);
+        if (e.key === 'ArrowRight') scrollToIndex(currentIndex + 1);
+      });
+
+      // Show carousel when ready
+      window.showFilterCarousel = function() {
+        const carousel = document.getElementById('filter-carousel');
+        const indicator = document.getElementById('center-indicator');
+        const captureBtn = document.getElementById('capture-btn');
+        if (carousel) carousel.classList.add('visible');
+        if (indicator) indicator.classList.add('visible');
+        if (captureBtn) captureBtn.classList.add('visible');
+      };
+    })();</script><script src="bundle.js"></script><style>.filter-scroll::-webkit-scrollbar,
+  .scrollable-selector::-webkit-scrollbar {
+  display: none;
+}</style></body></html>
