@@ -1,30 +1,12 @@
 <!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"><title>Multi-Face AR Effects</title><meta itemprop="name" content="Multi-Face AR Effects"><meta name="twitter:title" content="Multi-Face AR Effects"><meta property="og:title" content="Multi-Face AR Effects"><meta property="og:site_name" content="Multi-Face AR Effects"><meta name="description" content="Multi-face detection AR with up to 5 simultaneous faces tracked."><meta itemprop="description" content="Multi-face detection AR with up to 5 simultaneous faces tracked."><meta property="og:description" content="Multi-face detection AR with up to 5 simultaneous faces tracked."><script crossorigin="anonymous" src="./external/runtime/runtime.js"></script><script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="face"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script><script>console.log('=== Multi-Face AR Loading ===')
 
     function updateStatus(text, color = 'white') {
-      const statusEl = document.getElementById('loading-status')
-      if (statusEl) {
-        statusEl.textContent = text
-        statusEl.style.color = color
-      }
       console.log('Status:', text)
     }
 
     function updateDetails(text) {
-      const detailsEl = document.getElementById('loading-details')
-      if (detailsEl) detailsEl.innerHTML = text
+      console.log('Details:', text)
     }
-
-    setTimeout(() => updateStatus('Initializing...'), 100)
-    setTimeout(() => updateStatus('Loading 8th Wall Engine...'), 1000)
-    setTimeout(() => updateStatus('Preparing multi-face detection...'), 3000)
-
-    setTimeout(() => {
-      updateDetails(`
-        <div>✅ Page loaded successfully</div>
-        <div>⏳ Waiting for 8th Wall Engine...</div>
-        <div>⏳ Preparing up to 5 face tracking slots...</div>
-      `)
-    }, 500)
 
     window.updateLoadingStatus = updateStatus
     window.updateLoadingDetails = updateDetails
@@ -62,7 +44,6 @@
       pointer-events: auto;
     }
 
-    /* Scroll container with arrows on sides */
     .carousel-wrapper {
       position: relative;
       display: flex;
@@ -79,15 +60,11 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
       padding: 8px 24px;
-      /* Ensure horizontal layout, never wrap */
       flex-wrap: nowrap;
       white-space: nowrap;
-      /* Center the first/last items when scrolled to edges */
       scroll-padding-left: calc(50vw - 30px);
       scroll-padding-right: calc(50vw - 30px);
-      /* Smooth scroll behavior for programmatic scrolling */
       scroll-behavior: smooth;
-      /* Allow touch actions for horizontal scroll */
       touch-action: pan-x pan-y pinch-zoom;
       width: 100%;
     }
@@ -96,7 +73,6 @@
       display: none;
     }
 
-    /* Hide scroll buttons on mobile, show on desktop */
     .scroll-btn {
       display: none;
       position: absolute;
@@ -104,8 +80,8 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(253, 253, 253, 0.993);
+      border: 1px solid rgb(249, 249, 249);
       color: white;
       font-size: 18px;
       cursor: pointer;
@@ -151,9 +127,7 @@
       transition: transform 0.15s ease;
       -webkit-user-select: none;
       user-select: none;
-      /* Prevent any shrinking */
       min-width: 64px;
-      /* Ensure items don't get squished */
       max-width: 64px;
     }
 
@@ -165,13 +139,12 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.25);
+      border: 2px solid rgb(255, 255, 255);
       overflow: hidden;
       position: relative;
       transition: all 0.2s ease;
       background-size: cover;
       background-position: center;
-      /* Prevent any layout shifts */
       flex-shrink: 0;
       background-color: #333;
     }
@@ -199,7 +172,6 @@
       text-align: center;
     }
 
-    /* Center indicator line */
     .center-indicator {
       position: fixed;
       bottom: 96px;
@@ -219,7 +191,6 @@
       opacity: 1;
     }
 
-    /* Current filter label */
     #current-filter-label {
       position: fixed;
       bottom: 118px;
@@ -240,7 +211,6 @@
       opacity: 1;
     }
 
-    /* Photo capture button (centered above carousel) */
     #capture-btn {
       position: fixed;
       bottom: 30px;
@@ -281,7 +251,6 @@
       background: #e0e0e0;
     }
 
-    /* Multi-face indicator (top right) */
     #face-indicator {
       position: fixed;
       top: 16px;
@@ -325,19 +294,25 @@
       margin-right: 2px;
     }
 
-    /* Loading screen */
+    /* ===== LOADING SCREEN – VIDEO ONLY ===== */
     #simple-loading {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: #000;
-      color: white;
+      z-index: 9999;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
-      text-align: center;
+      overflow: hidden;
+    }
+
+    #loading-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Shift the video left by 8px */
+      transform: translateX(-15px);
     }
 
     #camera-error {
@@ -358,7 +333,6 @@
     #camera-error h2 { color: #ff6b6b; margin-bottom: 20px; }
     #camera-error p { margin-bottom: 10px; opacity: 0.9; }
 
-    /* Scroll hint animation for first-time users */
     @keyframes scrollHint {
       0%, 100% { transform: translateX(0); }
       50% { transform: translateX(-8px); }
@@ -366,7 +340,7 @@
 
     .scroll-hint {
       animation: scrollHint 1.5s ease-in-out 3;
-    }</style><base target="_blank"><base target="_blank"><base target="_blank"></head><body><div id="filter-carousel"><div class="carousel-wrapper"><button class="scroll-btn left" id="scroll-left" aria-label="Scroll left">‹</button><div class="filter-scroll" id="filter-scroll"><div class="filter-item active" data-filter="baobao"><div class="filter-thumb" style="background-image: url('assets/moneybaobao.png')"></div><span class="filter-name">Baobao</span></div><div class="filter-item" data-filter="realcat"><div class="filter-thumb" style="background-image: url('assets/real_cat.png')"></div><span class="filter-name">Real Cat</span></div><div class="filter-item" data-filter="thirdcat"><div class="filter-thumb" style="background-image: url('assets/catonbranch.png')"></div><span class="filter-name">Cat on Branch</span></div><div class="filter-item" data-filter="fourthcat"><div class="filter-thumb" style="background-image: url('assets/luckycat.png')"></div><span class="filter-name">Lucky cat</span></div><div class="filter-item" data-filter="fifthcat"><div class="filter-thumb" style="background-image: url('assets/flowercat_2.png')"></div><span class="filter-name">Fifth Cat</span></div><div class="filter-item" data-filter="sixthcat"><div class="filter-thumb" style="background-image: url('assets/koi_luckycat.png')"></div><span class="filter-name">Koi Lucky Cat Family</span></div><div class="filter-item" data-filter="seventhcat"><div class="filter-thumb" style="background-image: url('assets/blackcat.png')"></div><span class="filter-name">Black Cat</span></div><div class="filter-item" data-filter="eighthcat"><div class="filter-thumb" style="background-image: url('assets/dancing_lion_cat.png')"></div><span class="filter-name">Dancing Lion Cat</span></div><div class="filter-item" data-filter="ninethcat"><div class="filter-thumb" style="background-image: url('assets/cat_flowers.png')"></div><span class="filter-name">Cat with Flowers</span></div></div><button class="scroll-btn right" id="scroll-right" aria-label="Scroll right">›</button></div></div><div class="center-indicator" id="center-indicator"></div><div id="current-filter-label">Baobao</div><div id="capture-btn"></div><div id="face-indicator"><span class="face-dot-label">Faces:</span><div class="face-dot" data-face="1" title="Face 1"></div><div class="face-dot" data-face="2" title="Face 2"></div><div class="face-dot" data-face="3" title="Face 3"></div></div><div id="simple-loading"><div style="font-size: 24px; margin-bottom: 20px;">🎭 Multi-Face AR Effects</div><div id="loading-status" style="font-size: 18px; margin-bottom: 30px; opacity: 0.9;">Initializing camera...</div><div id="loading-details" style="font-size: 14px; opacity: 0.7; max-width: 400px; line-height: 1.5;"><div>1. Checking camera permissions...</div><div>2. Loading 8th Wall Engine...</div><div>3. Preparing multi-face tracking (up to 3 faces)...</div></div><div style="margin-top: 40px; font-size: 12px; opacity: 0.5;">If stuck here, check browser console (F12) for errors</div></div><div id="camera-error"></div><script>(function() {
+    }</style></head><body><div id="filter-carousel"><div class="carousel-wrapper"><button class="scroll-btn left" id="scroll-left" aria-label="Scroll left">‹</button><div class="filter-scroll" id="filter-scroll"><div class="filter-item active" data-filter="baobao"><div class="filter-thumb" style="background-image: url('assets/1.png')"></div><span class="filter-name">Baobao</span></div><div class="filter-item" data-filter="sixthcat"><div class="filter-thumb" style="background-image: url('assets/2.png')"></div><span class="filter-name">Koi Lucky Cat Family</span></div><div class="filter-item" data-filter="eighthcat"><div class="filter-thumb" style="background-image: url('assets/3.png')"></div><span class="filter-name">Dancing Lion Cat</span></div><div class="filter-item" data-filter="realcat"><div class="filter-thumb" style="background-image: url('assets/4.png')"></div><span class="filter-name">Real Cat</span></div><div class="filter-item" data-filter="thirdcat"><div class="filter-thumb" style="background-image: url('assets/5.png')"></div><span class="filter-name">Cat on Branch</span></div><div class="filter-item" data-filter="fourthcat"><div class="filter-thumb" style="background-image: url('assets/6.png')"></div><span class="filter-name">Lucky cat</span></div><div class="filter-item" data-filter="fifthcat"><div class="filter-thumb" style="background-image: url('assets/8.png')"></div><span class="filter-name">Flower Cat</span></div><div class="filter-item" data-filter="seventhcat"><div class="filter-thumb" style="background-image: url('assets/9.png')"></div><span class="filter-name">Black Cat</span></div><div class="filter-item" data-filter="ninethcat"><div class="filter-thumb" style="background-image: url('assets/7.png')"></div><span class="filter-name">Cat with Flowers</span></div></div><button class="scroll-btn right" id="scroll-right" aria-label="Scroll right">›</button></div></div><div class="center-indicator" id="center-indicator"></div><div id="current-filter-label">Baobao</div><div id="capture-btn"></div><div id="face-indicator"><span class="face-dot-label">Faces:</span><div class="face-dot" data-face="1" title="Face 1"></div><div class="face-dot" data-face="2" title="Face 2"></div><div class="face-dot" data-face="3" title="Face 3"></div></div><div id="simple-loading"><video id="loading-video" autoplay loop muted playsinline><source src="assets/cat_loading_screen.mp4" type="video/mp4"><div style="color:white; font-size:20px;">Loading AR experience...</div></video></div><div id="camera-error"></div><script>(function() {
       const scrollContainer = document.getElementById('filter-scroll');
       const leftBtn = document.getElementById('scroll-left');
       const rightBtn = document.getElementById('scroll-right');
@@ -374,16 +348,12 @@
       const currentLabel = document.getElementById('current-filter-label');
       let currentIndex = 0;
 
-      // Scroll by one item width + gap
-      const scrollAmount = 74; // 60px thumb + 14px gap
-
       function scrollToIndex(index) {
         if (index < 0) index = 0;
         if (index >= filterItems.length) index = filterItems.length - 1;
         currentIndex = index;
         const item = filterItems[index];
         if (item && scrollContainer) {
-          // Center the item in the viewport
           const containerWidth = scrollContainer.clientWidth;
           const itemLeft = item.offsetLeft;
           const itemWidth = item.offsetWidth;
@@ -394,44 +364,43 @@
       }
 
       function updateActiveState(index) {
-       // Replace the existing filterItems click handler with:
-filterItems.forEach((item, index) => {
-  item.addEventListener('click', () => {
-    const filterId = item.dataset.filter
-    if (filterId && window.globalWorld) {
-      window.globalWorld.spaces.loadSpace(filterId)
-      console.log(`➡️ Loading space: ${filterId}`)
-    }
-    scrollToIndex(index)
-  })
-});
+        filterItems.forEach((item, i) => {
+          item.classList.toggle('active', i === index);
+        });
+        const label = filterItems[index]?.querySelector('.filter-name')?.textContent || '';
+        if (currentLabel) {
+          currentLabel.textContent = label;
+          currentLabel.classList.add('visible');
+        }
       }
 
       if (leftBtn) {
         leftBtn.addEventListener('click', () => scrollToIndex(currentIndex - 1));
       }
-
       if (rightBtn) {
         rightBtn.addEventListener('click', () => scrollToIndex(currentIndex + 1));
       }
 
-      // Click on item to select and scroll to it
       filterItems.forEach((item, index) => {
-        item.addEventListener('click', () => scrollToIndex(index));
+        item.addEventListener('click', () => {
+          const filterId = item.dataset.filter;
+          if (filterId && window.globalWorld) {
+            window.globalWorld.spaces.loadSpace(filterId);
+            console.log(`➡️ Loading space: ${filterId}`);
+          }
+          scrollToIndex(index);
+        });
       });
 
-      // Handle scroll snap to update active state
       let scrollTimeout;
       if (scrollContainer) {
         scrollContainer.addEventListener('scroll', () => {
           clearTimeout(scrollTimeout);
           scrollTimeout = setTimeout(() => {
-            // Find which item is closest to center
             const containerRect = scrollContainer.getBoundingClientRect();
             const containerCenter = containerRect.left + containerRect.width / 2;
             let closestIndex = 0;
             let closestDistance = Infinity;
-
             filterItems.forEach((item, i) => {
               const itemRect = item.getBoundingClientRect();
               const itemCenter = itemRect.left + itemRect.width / 2;
@@ -441,7 +410,6 @@ filterItems.forEach((item, index) => {
                 closestIndex = i;
               }
             });
-
             if (closestIndex !== currentIndex) {
               currentIndex = closestIndex;
               updateActiveState(currentIndex);
@@ -450,13 +418,11 @@ filterItems.forEach((item, index) => {
         });
       }
 
-      // Keyboard navigation
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') scrollToIndex(currentIndex - 1);
         if (e.key === 'ArrowRight') scrollToIndex(currentIndex + 1);
       });
 
-      // Show carousel when ready
       window.showFilterCarousel = function() {
         const carousel = document.getElementById('filter-carousel');
         const indicator = document.getElementById('center-indicator');
@@ -466,6 +432,6 @@ filterItems.forEach((item, index) => {
         if (captureBtn) captureBtn.classList.add('visible');
       };
     })();</script><script src="bundle.js"></script><style>.filter-scroll::-webkit-scrollbar,
-  .scrollable-selector::-webkit-scrollbar {
-  display: none;
-}</style></body></html>
+    .scrollable-selector::-webkit-scrollbar {
+      display: none;
+    }</style></body></html>
