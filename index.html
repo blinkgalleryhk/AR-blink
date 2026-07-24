@@ -80,9 +80,9 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: rgba(253, 253, 253, 0.993);
-      border: 1px solid rgb(249, 249, 249);
-      color: white;
+      background: rgba(255, 167, 3, 0.993);
+      border: 1px solid rgb(255, 179, 15);
+      color: rgb(255, 177, 8);
       font-size: 18px;
       cursor: pointer;
       align-items: center;
@@ -151,12 +151,12 @@
 
     .filter-item.active .filter-thumb {
       border-color: #fff;
-      box-shadow: 0 0 0 3px #4CAF50, 0 0 12px rgba(76, 175, 80, 0.4);
+      box-shadow: 0 0 0 3px #ffd0fc, 0 0 12px rgba(76, 175, 80, 0.4);
       transform: scale(1.08);
     }
 
     .filter-item.active .filter-name {
-      color: #4CAF50;
+      color: #ffd0fc;
       font-weight: 700;
     }
 
@@ -282,9 +282,9 @@
     }
 
     .face-dot.active {
-      background: #4CAF50;
-      border-color: #81C784;
-      box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+      background: #db86cc;
+      border-color: #db86cc;
+      box-shadow: 0 0 8px rgba(167, 76, 175, 0.5);
     }
 
     .face-dot-label {
@@ -340,7 +340,7 @@
 
     .scroll-hint {
       animation: scrollHint 1.5s ease-in-out 3;
-    }</style></head><body><div id="filter-carousel"><div class="carousel-wrapper"><button class="scroll-btn left" id="scroll-left" aria-label="Scroll left">‹</button><div class="filter-scroll" id="filter-scroll"><div class="filter-item active" data-filter="baobao"><div class="filter-thumb" style="background-image: url('assets/1.png')"></div><span class="filter-name">Baobao</span></div><div class="filter-item" data-filter="sixthcat"><div class="filter-thumb" style="background-image: url('assets/2.png')"></div><span class="filter-name">Koi Lucky Cat Family</span></div><div class="filter-item" data-filter="eighthcat"><div class="filter-thumb" style="background-image: url('assets/3.png')"></div><span class="filter-name">Dancing Lion Cat</span></div><div class="filter-item" data-filter="realcat"><div class="filter-thumb" style="background-image: url('assets/4.png')"></div><span class="filter-name">Real Cat</span></div><div class="filter-item" data-filter="thirdcat"><div class="filter-thumb" style="background-image: url('assets/5.png')"></div><span class="filter-name">Cat on Branch</span></div><div class="filter-item" data-filter="fourthcat"><div class="filter-thumb" style="background-image: url('assets/6.png')"></div><span class="filter-name">Lucky cat</span></div><div class="filter-item" data-filter="fifthcat"><div class="filter-thumb" style="background-image: url('assets/8.png')"></div><span class="filter-name">Flower Cat</span></div><div class="filter-item" data-filter="seventhcat"><div class="filter-thumb" style="background-image: url('assets/9.png')"></div><span class="filter-name">Black Cat</span></div><div class="filter-item" data-filter="ninethcat"><div class="filter-thumb" style="background-image: url('assets/7.png')"></div><span class="filter-name">Cat with Flowers</span></div></div><button class="scroll-btn right" id="scroll-right" aria-label="Scroll right">›</button></div></div><div class="center-indicator" id="center-indicator"></div><div id="current-filter-label">Baobao</div><div id="capture-btn"></div><div id="face-indicator"><span class="face-dot-label">Faces:</span><div class="face-dot" data-face="1" title="Face 1"></div><div class="face-dot" data-face="2" title="Face 2"></div><div class="face-dot" data-face="3" title="Face 3"></div></div><div id="simple-loading"><video id="loading-video" autoplay loop muted playsinline><source src="assets/cat_loading_screen.mp4" type="video/mp4"><div style="color:white; font-size:20px;">Loading AR experience...</div></video></div><div id="camera-error"></div><script>(function() {
+    }</style></head><body><div id="filter-carousel"><div class="carousel-wrapper"><button class="scroll-btn left" id="scroll-left" aria-label="Scroll left">‹</button><div class="filter-scroll" id="filter-scroll"><div class="filter-item active" data-filter="baobao"><div class="filter-thumb" style="background-image: url('assets/1.png')"></div><span class="filter-name">Baobao</span></div><div class="filter-item" data-filter="sixthcat"><div class="filter-thumb" style="background-image: url('assets/2.png')"></div><span class="filter-name">Koi Lucky Cat Family</span></div><div class="filter-item" data-filter="eighthcat"><div class="filter-thumb" style="background-image: url('assets/3.png')"></div><span class="filter-name">Dancing Lion Cat</span></div><div class="filter-item" data-filter="realcat"><div class="filter-thumb" style="background-image: url('assets/4.png')"></div><span class="filter-name">Real Cat</span></div><div class="filter-item" data-filter="thirdcat"><div class="filter-thumb" style="background-image: url('assets/5.png')"></div><span class="filter-name">Cat on Branch</span></div><div class="filter-item" data-filter="fourthcat"><div class="filter-thumb" style="background-image: url('assets/6.png')"></div><span class="filter-name">Lucky cat</span></div><div class="filter-item" data-filter="fifthcat"><div class="filter-thumb" style="background-image: url('assets/8.png')"></div><span class="filter-name">Flower Cat</span></div><div class="filter-item" data-filter="seventhcat"><div class="filter-thumb" style="background-image: url('assets/9.png')"></div><span class="filter-name">Black Cat</span></div><div class="filter-item" data-filter="ninethcat"><div class="filter-thumb" style="background-image: url('assets/7.png')"></div><span class="filter-name">Cat with Flowers</span></div><div class="filter-item" data-filter="tenthcat"><div class="filter-thumb" style="background-image: url('assets/cowboy_baobao.png')"></div><span class="filter-name">Cat cowboy</span></div></div><button class="scroll-btn right" id="scroll-right" aria-label="Scroll right">›</button></div></div><div class="center-indicator" id="center-indicator"></div><div id="current-filter-label">Baobao</div><div id="capture-btn"></div><div id="face-indicator"><span class="face-dot-label">Faces:</span><div class="face-dot" data-face="1" title="Face 1"></div><div class="face-dot" data-face="2" title="Face 2"></div><div class="face-dot" data-face="3" title="Face 3"></div></div><div id="simple-loading"><video id="loading-video" autoplay loop muted playsinline><source src="assets/cat_loading_screen.mp4" type="video/mp4"><div style="color:white; font-size:20px;">Loading AR experience...</div></video></div><div id="camera-error"></div><script>(function() {
       const scrollContainer = document.getElementById('filter-scroll');
       const leftBtn = document.getElementById('scroll-left');
       const rightBtn = document.getElementById('scroll-right');
